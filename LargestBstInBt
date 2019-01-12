@@ -1,0 +1,105 @@
+#include <bits/stdc++.h> 
+#include <iostream>
+using namespace std;
+
+int max_count=0, pre=INT_MIN;
+
+struct Node{
+    int d,count;
+    Node *l;
+    Node *r;
+};
+
+//Function to return a new node
+Node* createNode(int d){
+    Node *node;
+    node=new Node;
+    node->d=d;
+    node->l=NULL;
+    node->r=NULL;
+    node->count=0;
+    return node;
+}
+
+//Function to count the largest Bst in Bt
+//for BST,Inorder traversal will give the elements in increasing order
+//so while traversing, check the previous element( previous should be lesser than current element while doing inorder)
+//And also check if left is present for a node, it should be lesser than parent(Current node)
+//if right is present, it should be greater than the current's data.
+//If the above condition satisfies,make the count for current node as 1 else 0.
+//Now we need to do bottom up approach.while traversing the node check for left child and
+//right child. if exist, if count of both the children aren't 0 add the left and right child count for the current
+// else if any of the two children's count is 0, make the current node count as 0 (because it's not proper BST incase of 0)
+
+void largestBstInBt(Node *ro){
+    if(ro==NULL){
+        return;
+    }
+    largestBstInBt(ro->l);
+    if(ro->l==NULL&&ro->r==NULL){
+        ro->count=1;
+    }
+    else if(ro->r!=NULL&&ro->r!=NULL){
+        if(ro->l->d<ro->d&&ro->r->d>ro->d){
+        if(ro->d>pre)
+           ro->count=1; 
+        }
+    }
+    else if(ro->l!=NULL&&ro->l->d<ro->d){
+        if(ro->d>pre)
+         ro->count=1;
+    }
+    else if(ro->r!=NULL&&ro->r->d>ro->d){
+        if(ro->d>pre)
+         ro->count=1;
+    }
+    else{
+        ro->count=0;
+    }
+    pre=ro->d;
+    largestBstInBt(ro->r);
+    if(ro->count!=0){
+    if(ro->l!=NULL&&ro->r!=NULL){
+        if(ro->l->count==0||ro->r->count==0){
+            ro->count=0;
+        }
+        else{
+            ro->count=ro->l->count+ro->r->count+1;
+        }
+    }
+    else if(ro->l!=NULL){
+        if(ro->l->count==0){
+            ro->count=0;
+        }
+        else{
+            ro->count=ro->l->count+1;
+        }
+    }
+    else if(ro->r!=NULL){
+        if(ro->r->count==0){
+            ro->count=0;
+        }
+        else{
+            ro->count=ro->r->count+1;
+        }
+    }
+    }
+    if(ro->count>max_count)
+    max_count=ro->count;
+}
+int main()
+{
+    Node *root;
+    root = createNode(50); 
+    root->l = createNode(30);  
+    root->r = createNode(60);   
+    root->l->l = createNode(5);   
+    root->l->r = createNode(20);
+    root->r->l = createNode(45);
+    root->r->r = createNode(70);
+    root->r->r->l = createNode(65);
+    root->r->r->r = createNode(80);
+    largestBstInBt(root);
+    cout<<"MAXIMUM BST IN BT:"<<max_count;
+    return 0;
+}
